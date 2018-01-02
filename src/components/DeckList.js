@@ -1,20 +1,27 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements';
-import data from '../data';
-import { setItem, getItem } from '../utils/api';
+import mockData from '../data';
+import { setItem, getDecks } from '../utils/api';
 import { purple, white } from '../utils/colors';
 
 export default class DeckList extends React.Component {
+    state = {
+      data: []
+    }
+
     componentDidMount() {
-      getItem()
+      getDecks()
       .then((res) => {
         //Add dummy data just the first time
-        if (!res) setItem(data)
+        if (!res) setItem(mockData)
+        this.setState({ data: res ? JSON.parse(res) : mockData });
       });
     }
 
     render() {
+      const { navigate } = this.props.navigation;
+      const { data } = this.state;
       return (
         <View>
           <List>
@@ -24,7 +31,7 @@ export default class DeckList extends React.Component {
                   key={key}
                   title={key}
                   badge={{
-                    value: data[key]['questions'].length,
+                    value: data[key] ? data[key]['questions'].length : 0,
                     containerStyle: styles.item,
                     textStyle: styles.textList
                   }}
@@ -40,7 +47,7 @@ export default class DeckList extends React.Component {
             icon={{ name: 'playlist-add' }}
             title="Add New Deck"
             style={styles.button}
-            onPress={() => console.log('new deck pressed')}
+            onPress={() => navigate('NewDeck', { new: true })}
           />
       </View>
       );
