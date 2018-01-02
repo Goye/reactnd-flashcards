@@ -12,6 +12,11 @@ export function getDecks() {
 }
 
 export function getDeck(name) {
+    return getDecks()
+       .then((data) => {
+        const decks = JSON.parse(data);
+        return decks[name];
+    })
 }
 
 export function saveDeckTitle(title) {
@@ -27,4 +32,13 @@ export function saveDeckTitle(title) {
 }
 
 export function addCardToDeck(name, card) {
+    return getDecks()
+       .then((data) => {
+        const decks = JSON.parse(data);
+        const questions = decks[name].questions;
+        questions.push(card);
+        //TODO use functional methods to avoid mutation
+        setItem(decks);
+        return decks[name];
+    })
 }

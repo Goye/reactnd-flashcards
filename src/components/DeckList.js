@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements';
 import mockData from '../data';
 import { setItem, getDecks } from '../utils/api';
@@ -23,7 +23,7 @@ export default class DeckList extends React.Component {
       const { navigate } = this.props.navigation;
       const { data } = this.state;
       return (
-        <View>
+        <ScrollView>
           <List>
             {Object.keys(data).map((key) => {
               return (
@@ -41,7 +41,7 @@ export default class DeckList extends React.Component {
             })}
           </List>
           <Button
-            large
+            large={false}
             borderRadius={10}
             backgroundColor={purple}
             icon={{ name: 'playlist-add' }}
@@ -49,7 +49,7 @@ export default class DeckList extends React.Component {
             style={styles.button}
             onPress={() => navigate('NewDeck', { new: true })}
           />
-      </View>
+      </ScrollView>
       );
     }
 }
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     color: `${white}`
   },
   button: {
-    flex: 1,
     marginTop: 20
   }
 });

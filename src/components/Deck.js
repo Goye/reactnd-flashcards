@@ -23,6 +23,7 @@ const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
         {error ? error : null}
       </FormValidationMessage>
       <Button
+        large={false}
         borderRadius={10}
         backgroundColor={green}
         icon={{ name: 'playlist-add' }}
@@ -33,8 +34,9 @@ const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
   );
 };
 
-const RenderDeck = ({ deck }) => {
+const RenderDeck = ({ deck, onNewQuestion, onQuizStart }) => {
   const { title, questions } = deck;
+  
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.title}>
@@ -42,23 +44,23 @@ const RenderDeck = ({ deck }) => {
         <Text h5>{`${questions.length} cards`}</Text>
       </View>
       <Button
-        large
+        large={false}
         title="Add New Card"
         borderRadius={10}
         backgroundColor={red}
         icon={{ name: 'add-circle-outline' }}
         style={styles.button}
-        onPress={() => console.log('add new card')}
+        onPress={onNewQuestion}
       />
       {questions.length > 0 && (
         <Button
-          large
+          large={false}
           title="Start Quiz"
           borderRadius={10}
           backgroundColor={purple}
           icon={{ name: 'play-circle-outline' }}
           style={styles.button}
-          onPress={() => console.log('start quiz')}
+          onPress={onQuizStart}
         />
       )}
     </View>
@@ -106,9 +108,21 @@ export default class Deck extends React.Component {
     this.setState({ title });
   };
 
+  onNewQuestion = (deck) => {
+    const { navigate } = this.props.navigation;
+    navigate('NewQuestion', { new: true, deck });
+  }
+
+  onQuizStart = (deck) => {
+    const { questions } = deck;
+    const { navigate } = this.props.navigation;
+    navigate('Quiz', { questions });
+  }
+
   render() {
     const { navigation: { state: { params } } } = this.props;
-    const { error } = this.state;  
+    const { error } = this.state;
+    const deck = params.deck;  
     if (params.new) {
       return (
         <RenderNewDeck 
@@ -118,7 +132,13 @@ export default class Deck extends React.Component {
         />
       );
     } else {
-      return <RenderDeck deck={params.deck} />
+      return (
+        <RenderDeck 
+          deck={deck} 
+          onNewQuestion={() => this.onNewQuestion(deck)}
+          onQuizStart={() => this.onQuizStart(deck)} 
+        />
+      );
     }    
   }
 }
@@ -126,11 +146,10 @@ export default class Deck extends React.Component {
 const styles = StyleSheet.create({
   title: {
     marginTop: 20,
+    marginBottom: 20,
     alignItems: 'center'
   },
   button: {
-    flex: 1,
-    marginTop: 20,
-    marginBottom: 20
+    marginTop: 5
   }
 });
