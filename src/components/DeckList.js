@@ -35,7 +35,7 @@ export default class DeckList extends React.Component {
                     containerStyle: styles.item,
                     textStyle: styles.textList
                   }}
-                  onPress={() => console.log('pressed')}
+                  onPress={() => navigate('Deck', { deck: data[key] })}
                 />
               )
             })}

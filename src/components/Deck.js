@@ -1,12 +1,13 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
   FormLabel,
   FormInput,
   FormValidationMessage,
-  Button
+  Button,
+  Text
 } from 'react-native-elements';
-import { green } from '../utils/colors';
+import { green, red, purple } from '../utils/colors';
 import { getDecks, saveDeckTitle } from '../utils/api';
 
 const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
@@ -32,10 +33,34 @@ const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
   );
 };
 
-const RenderDeck = () => {
+const RenderDeck = ({ deck }) => {
+  const { title, questions } = deck;
   return (
-    <View>
-      <Text>I'm a simple view</Text>
+    <View style={{ flex: 1 }}>
+      <View style={styles.title}>
+        <Text h2>{`${title}`}</Text>
+        <Text h5>{`${questions.length} cards`}</Text>
+      </View>
+      <Button
+        large
+        title="Add New Card"
+        borderRadius={10}
+        backgroundColor={red}
+        icon={{ name: 'add-circle-outline' }}
+        style={styles.button}
+        onPress={() => console.log('add new card')}
+      />
+      {questions.length > 0 && (
+        <Button
+          large
+          title="Start Quiz"
+          borderRadius={10}
+          backgroundColor={purple}
+          icon={{ name: 'play-circle-outline' }}
+          style={styles.button}
+          onPress={() => console.log('start quiz')}
+        />
+      )}
     </View>
   );
 };
@@ -93,7 +118,19 @@ export default class Deck extends React.Component {
         />
       );
     } else {
-      return <RenderDeck />
+      return <RenderDeck deck={params.deck} />
     }    
   }
 }
+
+const styles = StyleSheet.create({
+  title: {
+    marginTop: 20,
+    alignItems: 'center'
+  },
+  button: {
+    flex: 1,
+    marginTop: 20,
+    marginBottom: 20
+  }
+});
