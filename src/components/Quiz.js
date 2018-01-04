@@ -5,6 +5,7 @@ import AnimateNumber from 'react-native-animate-number';
 import Question from './Question';
 import { green, red, purple } from '../styles/colors';
 import styles from '../styles';
+import { clearLocalNotification, setLocalNotification } from '../utils';
 
 const RenderQuestion = ({ navigation, data, current, total, onButtonPressed }) => {
   return (
@@ -39,6 +40,8 @@ const RenderQuestion = ({ navigation, data, current, total, onButtonPressed }) =
 
 const ShowResults = ({ correct, incorrect, total, onRestartPress, onReturnPress }) => {
   const result = correct * 100 / total;
+  //Logic for local notification
+  clearLocalNotification().then(setLocalNotification);
   return (
     <View style={styles.resultContainer}>
       <Text h4>Result</Text>

@@ -7,6 +7,7 @@ import Deck from './src/components/Deck';
 import DeckList from './src/components/DeckList';
 import Question from './src/components/Question';
 import Quiz from './src/components/Quiz';
+import { setLocalNotification } from './src/utils';
 
 const navigationOptions = {
   headerTintColor: white,
@@ -63,6 +64,10 @@ const MainStatusBar = ({ backgroundColor, ...props}) => {
 }
 
 export default class App extends React.Component {
+  componentDidMount() {
+    setLocalNotification();
+  }
+
   render() {
     return (
       <View style={styles.container}>
