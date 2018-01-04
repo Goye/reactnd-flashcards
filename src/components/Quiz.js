@@ -3,15 +3,17 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import AnimateNumber from 'react-native-animate-number';
 import Question from './Question';
-import { green, red } from '../utils/colors';
+import { green, red, purple } from '../styles/colors';
+import styles from '../styles';
 
-const RenderQuestion = ({ navigation, data, current, onButtonPressed }) => {
+const RenderQuestion = ({ navigation, data, current, total, onButtonPressed }) => {
   return (
     <View>
       <Question 
         navigation={navigation} 
         data={data}
         current={current}
+        total={total}
       />
       <View style={styles.buttonContainer}>
         <Button
@@ -35,7 +37,7 @@ const RenderQuestion = ({ navigation, data, current, onButtonPressed }) => {
   );
 };
 
-const ShowResults = ({ correct, incorrect, total }) => {
+const ShowResults = ({ correct, incorrect, total, onRestartPress, onReturnPress }) => {
   const result = correct * 100 / total;
   return (
     <View style={styles.resultContainer}>
@@ -49,15 +51,37 @@ const ShowResults = ({ correct, incorrect, total }) => {
       </Text>
       <Text h4 style={{ color: green }}>Correct: {correct}</Text>
       <Text h4 style={{ color: red }}>Incorrect: {incorrect}</Text>
+      <View style={styles.button}>
+        <Button
+          large={false}
+          borderRadius={10}
+          buttonStyle={styles.quizButton}
+          backgroundColor={purple}
+          icon={{ name: 'replay' }}
+          title="Restart Quiz"
+          onPress={onRestartPress}
+        />
+        <Button
+          large={false}
+          borderRadius={10}
+          backgroundColor={red}
+          icon={{ name: 'assignment-return' }}
+          title="Return to Deck"
+          onPress={onReturnPress}
+        />
+      </View>
     </View>
   );
 };
 
+const initialState = {
+  current: 0,
+  correct: 0,
+  incorrect: 0
+};
 export default class Quiz extends React.Component {
   state = {
-    current: 0,
-    correct: 0,
-    incorrect: 0
+    ...initialState
   }
 
   onButtonPressed = (value) => {
@@ -66,12 +90,24 @@ export default class Quiz extends React.Component {
       [label]: this.state[label]+1,
       current: this.state.current+1
     });
-  }
+  };
+
+  onRestartPress = (deck) => {
+    const { navigate } = this.props.navigation;
+    this.setState({...initialState});
+    navigate('Quiz', { deck });
+  };
+
+  onReturnPress = (deck) => {
+    const { navigate } = this.props.navigation;
+    navigate('Deck', { deck });
+  };
 
   render() {
     const { current, correct, incorrect } = this.state;
     const { navigation: { state: { params } } } = this.props;
-    const questions = params.questions;
+    const deck = params.deck;
+    const { questions } = deck;
     const currentQuestion = questions[current];
     if (current < questions.length) {
       return (
@@ -79,6 +115,7 @@ export default class Quiz extends React.Component {
           navigation={this.props.navigation} 
           data={currentQuestion}
           current={current}
+          total={questions.length}
           onButtonPressed={(val) => this.onButtonPressed(val)}
         />
       );
@@ -88,23 +125,11 @@ export default class Quiz extends React.Component {
           correct={correct}
           incorrect={incorrect}
           total={current}
+          onRestartPress={() => this.onRestartPress(deck)}
+          onReturnPress={() => this.onReturnPress(deck)}
         />
       );
     }
     
   }
 }
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20
-  },
-  resultContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-});

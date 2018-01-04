@@ -1,22 +1,21 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements';
 import mockData from '../data';
 import { setItem, getDecks } from '../utils/api';
-import { purple, white } from '../utils/colors';
+import { purple, white } from '../styles/colors';
+import styles from '../styles';
 
 export default class DeckList extends React.Component {
     state = {
       data: []
     }
 
-    componentDidMount() {
-      getDecks()
-      .then((res) => {
-        //Add dummy data just the first time
-        if (!res) setItem(mockData)
-        this.setState({ data: res ? JSON.parse(res) : mockData });
-      });
+    async componentDidMount() {
+      const res = await getDecks();
+      //Add dummy data just the first time
+      if (!res) setItem(mockData)
+      this.setState({ data: res ? res : mockData });
     }
 
     render() {
@@ -53,15 +52,3 @@ export default class DeckList extends React.Component {
       );
     }
 }
-
-const styles = StyleSheet.create({
-  item: {
-    backgroundColor: purple
-  },
-  textList: {
-    color: `${white}`
-  },
-  button: {
-    marginTop: 20
-  }
-});

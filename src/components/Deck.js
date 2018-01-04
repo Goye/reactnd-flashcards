@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, KeyboardAvoidingView } from 'react-native';
 import {
   FormLabel,
   FormInput,
@@ -7,12 +7,13 @@ import {
   Button,
   Text
 } from 'react-native-elements';
-import { green, red, purple } from '../utils/colors';
+import { green, red, purple } from '../styles/colors';
 import { getDecks, saveDeckTitle } from '../utils/api';
+import styles from '../styles';
 
 const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
   return (
-    <View style={{flex: 1}}>
+    <KeyboardAvoidingView style={styles.container}>
       <FormLabel>Deck title</FormLabel>
       <FormInput
         onChangeText={onInputChange}
@@ -30,7 +31,7 @@ const RenderNewDeck = ({ onPressButton, onInputChange, error }) => {
         title="Add New Deck"
         onPress={onPressButton}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -38,7 +39,7 @@ const RenderDeck = ({ deck, onNewQuestion, onQuizStart }) => {
   const { title, questions } = deck;
   
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <View style={styles.title}>
         <Text h2>{`${title}`}</Text>
         <Text h5>{`${questions.length} cards`}</Text>
@@ -49,7 +50,7 @@ const RenderDeck = ({ deck, onNewQuestion, onQuizStart }) => {
         borderRadius={10}
         backgroundColor={red}
         icon={{ name: 'add-circle-outline' }}
-        style={styles.button}
+        style={styles.deckButton}
         onPress={onNewQuestion}
       />
       {questions.length > 0 && (
@@ -59,7 +60,7 @@ const RenderDeck = ({ deck, onNewQuestion, onQuizStart }) => {
           borderRadius={10}
           backgroundColor={purple}
           icon={{ name: 'play-circle-outline' }}
-          style={styles.button}
+          style={styles.deckButton}
           onPress={onQuizStart}
         />
       )}
@@ -77,9 +78,9 @@ export default class Deck extends React.Component {
     const { navigate } = this.props.navigation;
     const error = await this.validateTitle();
     if (!error) {
-      const data = await saveDeckTitle(title);
-      if (!data) {
-        navigate('Home');
+      const newDeck = await saveDeckTitle(title);
+      if (newDeck) {
+        navigate('Deck', { deck: newDeck });
       }
     }
   };
@@ -87,7 +88,7 @@ export default class Deck extends React.Component {
   validateTitle = async () => {
     const { title } = this.state;
     const decks = await getDecks();
-    const deckNames = Object.keys(JSON.parse(decks));
+    const deckNames = Object.keys(decks);
     if (!title) {
       this.setState({ error: 'Title should not be empty' })
       return true;
@@ -114,9 +115,8 @@ export default class Deck extends React.Component {
   }
 
   onQuizStart = (deck) => {
-    const { questions } = deck;
     const { navigate } = this.props.navigation;
-    navigate('Quiz', { questions });
+    navigate('Quiz', { deck });
   }
 
   render() {
@@ -142,14 +142,3 @@ export default class Deck extends React.Component {
     }    
   }
 }
-
-const styles = StyleSheet.create({
-  title: {
-    marginTop: 20,
-    marginBottom: 20,
-    alignItems: 'center'
-  },
-  button: {
-    marginTop: 5
-  }
-});

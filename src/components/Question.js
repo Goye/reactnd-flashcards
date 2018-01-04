@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Switch } from 'react-native';
+import { View, KeyboardAvoidingView, Switch } from 'react-native';
 import {
   FormLabel,
   FormInput,
@@ -8,8 +8,9 @@ import {
   Text,
   Card
 } from 'react-native-elements';
-import { green } from '../utils/colors';
+import { green } from '../styles/colors';
 import { addCardToDeck } from '../utils/api';
+import styles from '../styles';
 
 const RenderField = props => {
   const { label, onInputChange, ...otherProps } = props;
@@ -26,7 +27,7 @@ const RenderField = props => {
 
 const NewCard = ({ error, onQuestionChange, onAnswerChange, addNewCard }) => {
   return (
-    <View style={{flex: 1}}>
+    <KeyboardAvoidingView style={styles.container}>
       <RenderField
         name="question"
         label="Question"
@@ -50,11 +51,11 @@ const NewCard = ({ error, onQuestionChange, onAnswerChange, addNewCard }) => {
         icon={{ name: 'add-circle-outline' }}
         onPress={addNewCard}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
-const CardRender = ({ data, current, showAnswer, onToggleChange }) => {
+const CardRender = ({ data, current, total, showAnswer, onToggleChange }) => {
   const { question, answer } = data;
   return (
     <Card>
@@ -65,10 +66,10 @@ const CardRender = ({ data, current, showAnswer, onToggleChange }) => {
         />
         <Text h5>Show Answer</Text>
       </View>
-      <Text h6>{`Question # ${current + 1}`}</Text>
+      <Text h6>{`Question # ${current + 1}/${total}`}</Text>
       <Text h3>{question}</Text>
       {showAnswer && (
-        <Text h4 style={styles.answer}>{answer}</Text>
+        <Text h4>{answer}</Text>
       )}
     </Card>
   );
@@ -129,7 +130,7 @@ export default class Question extends React.Component {
   }
 
   render() {
-    const { navigation: { state: { params } }, data, current } = this.props;
+    const { navigation: { state: { params } }, data, current, total } = this.props;
     const { error, showAnswer } = this.state;
     if (params && params.new) {
       return (
@@ -145,6 +146,7 @@ export default class Question extends React.Component {
         <CardRender 
           data={data} 
           current={current}
+          total={total}
           showAnswer={showAnswer}
           onToggleChange={this.onToggleChange} 
         />
@@ -152,9 +154,3 @@ export default class Question extends React.Component {
     } 
   }
 }
-
-const styles = StyleSheet.create({
-  button: {
-    flex: 1,
-  }
-});

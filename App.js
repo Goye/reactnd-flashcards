@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { Text, View, StatusBar } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import { white, blue, red } from './src/utils/colors';
+import { white, blue, red } from './src/styles/colors';
+import styles from './src/styles';
 import Deck from './src/components/Deck';
 import DeckList from './src/components/DeckList';
 import Question from './src/components/Question';
@@ -55,7 +56,7 @@ const MainNavigator = StackNavigator({
 
 const MainStatusBar = ({ backgroundColor, ...props}) => {
   return (
-    <View style={{backgroundColor, height: 20 }} >
+    <View style={styles.statusBar} >
       <StatusBar translucent backgroundColor={backgroundColor} {...props} />
     </View>
   );
@@ -72,8 +73,3 @@ export default class App extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
